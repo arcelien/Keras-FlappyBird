@@ -27,12 +27,12 @@ GAME = 'bird' # the name of the game being played for log files
 CONFIG = 'nothreshold'
 ACTIONS = 2 # number of valid actions
 GAMMA = 0.99 # decay rate of past observations
-OBSERVATION = 3200. # timesteps to observe before training
-EXPLORE = 3000000. # frames over which to anneal epsilon
+OBSERVATION = 100. # timesteps to observe before training
+EXPLORE = 300000. # frames over which to anneal epsilon
 FINAL_EPSILON = 0.0001 # final value of epsilon
 INITIAL_EPSILON = 0.1 # starting value of epsilon
 REPLAY_MEMORY = 50000 # number of previous transitions to remember
-BATCH = 32 # size of minibatch
+BATCH = 1 # size of minibatch
 FRAME_PER_ACTION = 1
 LEARNING_RATE = 1e-4
 
@@ -160,9 +160,9 @@ def trainNetwork(model,args):
 
 
 
-            inputs = np.zeros((BATCH, s_t.shape[1], s_t.shape[2], s_t.shape[3]))   #32, 80, 80, 4
+            inputs = np.zeros((s_t.shape[0], s_t.shape[1])) #, s_t.shape[1], s_t.shape[2], s_t.shape[3]))   #32, 80, 80, 4
             print (inputs.shape)
-            targets = np.zeros((inputs.shape[0], ACTIONS))                         #32, 2
+            targets = np.zeros((1, ACTIONS))                         #32, 2
 
             #Now we do the experience replay
             for i in range(0, len(minibatch)):
@@ -205,9 +205,10 @@ def trainNetwork(model,args):
         else:
             state = "train"
 
-        print("TIMESTEP", t, "/ STATE", state, \
-            "/ EPSILON", epsilon, "/ ACTION", action_index, "/ REWARD", r_t, \
-            "/ Q_MAX " , np.max(Q_sa), "/ Loss ", loss)
+        if t % 50 == 0:
+            print("TIMESTEP", t, "/ STATE", state, \
+                "/ EPSILON", epsilon, "/ ACTION", action_index, "/ REWARD", r_t, \
+                "/ Q_MAX " , np.max(Q_sa), "/ Loss ", loss)
 
     print("Episode finished!")
     print("************************")
