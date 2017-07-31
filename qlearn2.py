@@ -28,13 +28,14 @@ CONFIG = 'nothreshold'
 ACTIONS = 2 # number of valid actions
 GAMMA = 0.99 # decay rate of past observations
 OBSERVATION = 100. # timesteps to observe before training
-EXPLORE = 300000. # frames over which to anneal epsilon
+EXPLORE = 100000. # frames over which to anneal epsilon
 FINAL_EPSILON = 0.0001 # final value of epsilon
 INITIAL_EPSILON = 0.1 # starting value of epsilon
 REPLAY_MEMORY = 50000 # number of previous transitions to remember
 BATCH = 1 # size of minibatch
 FRAME_PER_ACTION = 1
 LEARNING_RATE = 1e-4
+JUMP_CHANCE = 0.2
 
 img_rows , img_cols = 80, 80
 #Convert image into Black and white
@@ -122,10 +123,14 @@ def trainNetwork(model,args):
         if t % FRAME_PER_ACTION == 0:
             if random.random() <= epsilon:
                 print("----------Random Action----------")
-                action_index = random.randrange(ACTIONS)
+                action_pick = random.uniform(0, 1) # (ACTIONS)
+                action_index = 0
+                if action_pick < JUMP_CHANCE:
+                    action_index = 1
                 a_t[action_index] = 1
             else:
                 q = model.predict(s_t)       #input a stack of 4 images, get the prediction
+                print(q)
                 max_Q = np.argmax(q)
                 action_index = max_Q
                 a_t[max_Q] = 1
@@ -161,7 +166,7 @@ def trainNetwork(model,args):
 
 
             inputs = np.zeros((s_t.shape[0], s_t.shape[1])) #, s_t.shape[1], s_t.shape[2], s_t.shape[3]))   #32, 80, 80, 4
-            print (inputs.shape)
+            #print (inputs.shape)
             targets = np.zeros((1, ACTIONS))                         #32, 2
 
             #Now we do the experience replay
@@ -205,7 +210,7 @@ def trainNetwork(model,args):
         else:
             state = "train"
 
-        if t % 50 == 0:
+        if t % 20 == 0:
             print("TIMESTEP", t, "/ STATE", state, \
                 "/ EPSILON", epsilon, "/ ACTION", action_index, "/ REWARD", r_t, \
                 "/ Q_MAX " , np.max(Q_sa), "/ Loss ", loss)
