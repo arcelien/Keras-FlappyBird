@@ -60,7 +60,7 @@ class GameState:
     def frame_step(self, input_actions):
         pygame.event.pump()
 
-        reward = 0.1
+        reward = 0.01
         terminal = False
 
         if sum(input_actions) != 1:
@@ -145,9 +145,9 @@ class GameState:
         #print self.upperPipes[0]['y'] + PIPE_HEIGHT - int(BASEY * 0.2)
         # return image_data, reward, terminal
 
-        deltaX = self.lowerPipes[0]['x'] - self.playerx
-        deltaY = self.lowerPipes[0]['y'] - self.playery
-        return [deltaX, deltaY], reward, terminal
+        # deltaX = self.lowerPipes[0]['x'] - self.playerx
+        # deltaY = self.lowerPipes[0]['y'] - self.playery
+        return [self.lowerPipes[0]['x'], self.lowerPipes[0]['y'], self.upperPipes[0]['x'], self.upperPipes[0]['y'], self.playerx, self.playery], reward, terminal
 
 def getRandomPipe():
     """returns a randomly generated pipe"""
